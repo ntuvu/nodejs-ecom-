@@ -1,21 +1,24 @@
-const express = require('express');
+require('dotenv').config()
+const express = require('express')
 const morgan = require('morgan');
-const { default: helmet } = require('helmet');
-const app = express();
+const compression = require('compression')
+const {default: helmet} = require('helmet')
+const app = express()
 
 // init middleware
-app.use(morgan('dev'));
-app.use(helmet())
+app.use(morgan('dev'))
+app.use(helmet());
 app.use(compression())
-// init db
+app.use(express.json())
+app.use(express.urlencoded({
+    extended: true
+}))
 
+// init db
+require('./dbs/init.mongodb')
 // handle error
 
 // init routes
-app.get('/', (req, res, next) => {
-  return res.status(200).json({
-    message: 'Hello world!',
-  });
-});
+app.use('/', require('./routes'))
 
-module.exports = app;
+module.exports = app
